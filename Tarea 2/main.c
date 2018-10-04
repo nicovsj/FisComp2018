@@ -1,22 +1,11 @@
-//
-//  main.c
-//  p01-explicit_euler
-//
-//  Resolucion de la ley de Stefan-Boltzmann mediante diferentes
-//  integradores.
-//
-//  Created by Edgardo Dörner on 9/3/18.
-//  Copyright © 2018 Edgardo Dörner. All rights reserved.
-//
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
 // Parametros del problema
 
-const double m = 1;
-const double l = 1;
+const double m = 1.0;
+const double l = 1.0;
 const double g = 9.8067;
 const double q1_0 = 0.0;
 const double q2_0 = 0.0;
@@ -42,7 +31,7 @@ int main(int argc, const char * argv[]) {
 
     printf("******************************************\n");
     printf(" Resolución del pendulo doble \n");
-    printf(" mediante diferentes integradores         \n");
+    printf(" mediante Runge-Kutta         \n");
     printf("******************************************\n");
 
     // Discretizacion del eje temporal.
@@ -51,16 +40,19 @@ int main(int argc, const char * argv[]) {
         t[i] = i*dt;
     }
 
+    // Arreglos para guardar variables.
     double *q1 = (double*) malloc(sizeof(double)*nsteps);
     double *q2 = (double*) malloc(sizeof(double)*nsteps);
     double *p1 = (double*) malloc(sizeof(double)*nsteps);
     double *p2 = (double*) malloc(sizeof(double)*nsteps);
 
+    // Valores iniciales
     q1[0] = q1_0;
     q2[0] = q2_0;
     p1[0] = p1_0;
     p2[0] = p2_0;
 
+    // Arreglos auxiliares
     double yn[4] = {0.0, 0.0, 0.0, 0.0};
     double ynp[4] = {0.0, 0.0, 0.0, 0.0};
 
@@ -76,17 +68,21 @@ int main(int argc, const char * argv[]) {
         q2[i+1] = ynp[1];
         p1[i+1] = ynp[2];
         p2[i+1] = ynp[3];
-        // for (size_t i = 0; i < 4; i++) {
-        //   printf("ynp[%ld] = %3.5f\n", i, ynp[i]);
-        // }
-
     }
 
     // Guardamos los resultados en un archivo para su analisis posterior.
     FILE *fp = fopen("res_erk4.csv", "w");
-    fprintf(fp, "t,phi1,phi2,p1,p2\n");
+    fprintf(fp, "t,phi1,phi2,p1,p2,x1,z1,x2,z2\n");
+    double x1, z1, x2, z2;
     for (int i=0; i<nsteps; i++) {
-        fprintf(fp, "%2.5f, %2.5f, %2.5f, %2.5f, %2.5f\n", t[i], q1[i], q2[i], p1[i], p2[i]);
+
+        x1 = l* sin(q1[i]);
+        z1 = 2*l - l*cos(q1[i]);
+        x2 = l*(sin(q1[i]) + sin(q2[i]));
+        z2 = 2*l - l*(cos(q1[i]) + cos(q2[i]));
+
+        fprintf(fp, "%2.5f, %2.5f, %2.5f, %2.5f, %2.5f, %2.5f, %2.5f, %2.5f, %2.5f\n",
+                t[i], q1[i], q2[i], p1[i], p2[i], x1, z1, x2, z2);
     }
     fclose(fp);
 
@@ -108,15 +104,10 @@ int main(int argc, const char * argv[]) {
 
 // Y_in = {q1, q2, p1, p2}
 void F(double Yin[4], double Yout[4]) {
-
   Yout[0] = f1(Yin);
   Yout[1] = f2(Yin);
   Yout[2] = f3(Yin);
   Yout[3] = f4(Yin);
-
-
-  // printf("p1p = %3.5f, p2p = %3.5f, q1p = %3.5f, q2p = %3.5f, \n", p1p, p2p, q1p, q2p);
-
 }
 
 
