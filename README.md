@@ -8,7 +8,7 @@ Integrantes:
 
 ## Compilación de código de C
 Para compilar los `main.c` y luego ejecutar el programa se abre una terminal
-en el directorio
+en el directorio y se escribe lo siguiente:
 
 ```
 gcc -lm main.c -o main.out
