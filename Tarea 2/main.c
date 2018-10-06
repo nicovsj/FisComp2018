@@ -22,8 +22,8 @@ void eRK4(double* Yin, double* Yout, double dt);
 int main(int argc, const char * argv[]) {
     // Parametros del sistema.
     const double t0 = 0.0;              // instante inicial (s)
-    const double tf  = 60.0;            // instante final (s)
-    const double dt = .001;              // ancho temporal (s)
+    const double tf  = 120.0;            // instante final (s)
+    const double dt = .01;              // ancho temporal (s)
 
     // A partir de los parametros del sistema calculamos el numero de pasos
     // necesario.
@@ -101,7 +101,6 @@ int main(int argc, const char * argv[]) {
     return 0;
 }
 
-
 // Y_in = {q1, q2, p1, p2}
 void F(double Yin[4], double Yout[4]) {
   Yout[0] = f1(Yin);
@@ -109,8 +108,6 @@ void F(double Yin[4], double Yout[4]) {
   Yout[2] = f3(Yin);
   Yout[3] = f4(Yin);
 }
-
-
 
 void eRK4(double* Yin, double* Yout, double dt) {
   double Y1[4], Y2[4], Y3[4], Y4[4];
@@ -163,7 +160,7 @@ double f4(double Yin[4]) {
   p2 = Yin[3];
   ret = pow(p1, 2) + 2*pow(p2, 2) - 2*p1*p2*cos(q1-q2);
   ret /= 1 + pow(sin(q1-q2), 2);
-  ret *= sin(q1-q2) * cos(q1 -q2) * -1;
+  ret *= sin(q1-q2) * cos(q1 -q2) *-1;
   ret += p1*p2*sin(q1-q2);
   ret /= m*pow(l,2)*(1 + pow(sin(q1-q2), 2));
   ret -= 2*m*g*l*sin(q2);
