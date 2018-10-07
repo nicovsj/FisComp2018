@@ -9,8 +9,8 @@ const double l = 1.0;
 const double g = 9.8067;
 const double q1_0 = 0.0;
 const double q2_0 = 0.0;
-const double p1_0 = 4.0;
-const double p2_0 = 2.0;
+const double p1_0 = 0.0;
+const double p2_0 = 4.0;
 
 void F(double* Yin, double* Yout);
 double f1(double Yin[4]);
@@ -22,8 +22,8 @@ void eRK4(double* Yin, double* Yout, double dt);
 int main(int argc, const char * argv[]) {
     // Parametros del sistema.
     const double t0 = 0.0;              // instante inicial (s)
-    const double tf  = 120.0;            // instante final (s)
-    const double dt = .01;              // ancho temporal (s)
+    const double tf  = 60.0;            // instante final (s)
+    const double dt = .001;              // ancho temporal (s)
 
     // A partir de los parametros del sistema calculamos el numero de pasos
     // necesario.
