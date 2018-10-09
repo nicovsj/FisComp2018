@@ -10,7 +10,7 @@ const double g = 9.8067;
 const double q1_0 = 0.0;
 const double q2_0 = 0.0;
 const double p1_0 = 0.0;
-const double p2_0 = 4.0;
+const double p2_0 = 6.5;
 
 void F(double* Yin, double* Yout);
 double f1(double Yin[4]);
@@ -163,7 +163,7 @@ double f4(double Yin[4]) {
   ret *= sin(q1-q2) * cos(q1 -q2) *-1;
   ret += p1*p2*sin(q1-q2);
   ret /= m*pow(l,2)*(1 + pow(sin(q1-q2), 2));
-  ret -= 2*m*g*l*sin(q2);
+  ret -= m*g*l*sin(q2);
   return ret;
 }
 

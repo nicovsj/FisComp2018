@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-SPEED = 1
+SPEED = 100
 
 df = pd.read_csv('res_erk4.csv')
 fig = plt.figure(figsize=(8, 6), constrained_layout=True)
@@ -32,14 +32,14 @@ line2, = ax.plot([], [], 'k-', lw=.25)
 ax.set_xlabel(r'$x$')
 ax.set_ylabel(r'$z$')
 ax.set_xlim(-2, 2)
-ax.set_ylim(-.2, 2.2)
+ax.set_ylim(-.2, max(df['z2']))
 ax.grid(True)
 
 line3, = ax2.plot([], [], 'k-', lw=.25)
 line4, = ax3.plot([], [], 'k-', lw=.25)
 
 time_template = 'time = %.1f s'
-time_text = ax.text(0.45, 0.2, '', transform=ax.transAxes)
+time_text = ax.text(0.05, 0.1, '', transform=ax.transAxes)
 
 def init():
     line.set_data([], [])
