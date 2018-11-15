@@ -23,44 +23,36 @@
 #include <stdlib.h>
 #include <math.h>
 
-const double L = 10.0;                     // Largo del cilíndro
+// Constantes del material
+const double L = 10.0;                      // Largo del cilíndro
+const double kappa = 1.0;                   // Constante
 
-const double kappa = 1.0;                  // Constante
-const double T0 = 0.0;                     // Temperatura T(0, t)
-const double Tf  = 2.0;                    // Temperatura T(N, t)
-const double x0 = 0.0;                     // Posicion inicial (m)
-const double xf = L;                       // Posicion inicial (m)
+// Condiciones de borde
+const double T0 = 0.0;                      // Temperatura T(0, t)
+const double Tf  = 2.0;                     // Temperatura T(N, t)
+
+// Constantes del sumidero
 const double Theta = -0.4;
 const double l = 1.0;
 
-const int nnodes = 40;                     // Número de nodos
-const double dx = (xf - x0)/(nnodes - 1);  
-const int nsteps = 300;                     // Número de pasos
-const double dt = dx*dx/(2.0*kappa);                     
+// Elección de discretizaciones para resolver 
+// numéricamente
+const int nnodes = 60;
+                    // Número de pasos
+const double dx = L / (nnodes-1);                      // Ancho espacial (debe ser >= 1.0)
+const double dt = dx * dx / (kappa * 2.0);                      // Ancho temporal
+const int nsteps = 1200; 
 
-double f(double number);
+double Gamma(double number);
 void F(double* Yin, double* Yout, int dim);
 void eRK4(double* Yin, double* Yout, double dt, int dim);
 
 int main(int argc, const char * argv[]) {
-    // Parámetros del sistema.
-
-    // A partir de los parametros del sistema calculamos el numero de pasos
-    // necesario.
 
     printf("**********************************************\n");
     printf("Resolución de la ecuacion de calor u_t = k*u_xx - f \n");
     printf("mediante el método de Runge-Kutta explícito\n");
     printf("**********************************************\n");
-
-
-    // Discretizacion espacial.
-    double *x = (double*)malloc(nnodes*sizeof(double));
-    for (int i=0; i<nnodes; i++) {
-        x[i] = x0 + i*dx;
-    }
-
-    // double **u = (double**)malloc(nnodes*sizeof(double));
 
     double u[nsteps][nnodes];
 
@@ -83,12 +75,12 @@ int main(int argc, const char * argv[]) {
 
     // Guardamos los resultados en un archivo para su analisis posterior.
     FILE *fp = fopen("res_explicit.csv", "w");
-    
+
     fprintf(fp, "t,");
     for (int i = 0; i < nnodes-1; ++i) {
-        fprintf(fp, "x=%2.3f,", x[i]);
+        fprintf(fp, "x=%2.3f,", dx*i);
     }
-    fprintf(fp, "x=%2.3f\n", x[nnodes-1]);
+    fprintf(fp, "x=%2.3f\n", dx*(nnodes-1));
 
     
     for (int t=0; t<nsteps; t++) {
@@ -100,28 +92,24 @@ int main(int argc, const char * argv[]) {
         }
         fprintf(fp, "%10.5f\n", u[t][nnodes-1]);
     }
+    fclose(fp);
 
     // Imprimimos los valores finales como muestra.
     printf("Simulación terminada exitosamente\n");
-
-
-
-    // Limpieza
-    free(x);
-    fclose(fp);
-
+    
     return 0;
 }
 
+
 double Gamma(double number) {
   /* Sumidero/fuente en L/2 para la ecuación de calor inhomogénea */
-  return Theta / (l*kappa) * exp(-1.0 * pow((number - L/2)/l, 2));
+  return Theta / l * exp(-1.0 * pow((number - L/2)/l, 2));
 }
 
 void F(double* Yin, double* Yout, int dim) {
     Yout[0] = 0.0; Yout[dim-1] = 0.0;  // Truco para que las condiciones de borde funcionen
     for (int i = 1; i < dim-1; ++i) {
-        Yout[i] = kappa/(dx*dx) * (Yin[i-1] - 2*Yin[i] + Yin[i+1]) - Gamma(x0 + i*dx);
+        Yout[i] = kappa/(dx*dx) * (Yin[i-1] - 2*Yin[i] + Yin[i+1]) - Gamma(i*dx);
     }
 }
 
