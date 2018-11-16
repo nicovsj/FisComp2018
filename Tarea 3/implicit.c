@@ -120,7 +120,7 @@ const double l = 1.0;
 // Discretización para poder resolver numéricamente.
 const int nnodes = 60;                              // Número de pasos temporales
 const double dx = L / (nnodes-1);                   // Ancho espacial (debe ser >= 1.0)
-const double dt = dx * dx / (kappa * 2.0) + 0.1;    // Ancho temporal
+const double dt = dx * dx / (kappa * 2.0);    // Ancho temporal
 const int nsteps = 1200;                            // Número de pasos espaciales
 
 // Definición computacional del sumidero de calor.
@@ -137,8 +137,6 @@ int main(int argc, const char * argv[]) {
     printf("mediante el método de Crank-Nicolson implícito\n");
     printf("**********************************************\n");
 
-
-
     double u[nsteps][nnodes];
 
     // Condición inicial, t = 0
@@ -153,8 +151,9 @@ int main(int argc, const char * argv[]) {
     }
 
 
-
     // Implementación de los vectores input constituyentes del sistema de ecuaciones
+    // a, b, c representan la matriz tridiagonal A del sistema
+    // AT^{n+1} = T^n + F
     double *a = (double*)malloc(nnodes*sizeof(double));
     double *b = (double*)malloc(nnodes*sizeof(double));
     double *c = (double*)malloc(nnodes*sizeof(double));
@@ -183,7 +182,6 @@ int main(int argc, const char * argv[]) {
                - Gamma(x*dx);
       }
       r[nnodes-1] = Tf;
-
 
 
       tridiag(a, b, c, r, u[t+1], nnodes);
