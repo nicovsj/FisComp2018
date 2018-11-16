@@ -74,14 +74,21 @@
 
 --------------------------------------------------------------------------------
 
-    A continuación, se presenta un código que alberga un método implícito de re-
-    solución numérica para el problema de ecuación de calor en una barra cilín-
-    drica. En primer lugar, se buscó en [1], el libro guía del curso, alguna in-
-    dicación que pudiera servir, terminando este libro por referenciar a [2]. En
-    [2], se encontró un método de tridiagonalización en el capítulo 3 de sistemas
-    de ecuaciones lineales, el que permitió implementar la matriz tridiagonal,
-    para, posteriormente, encontrar [3] y decidir finalmente, que el método Crank-
-    Nicolson era el indicado para resolver implícitamente la ecuación del calor.
+    A continuación, se presenta el código que alberga un método explícito e implícito 
+    de resolución numérica para el problema de ecuación de calor en una barra cilín-
+    drica. 
+
+    Para el caso del método explícito, no se requirió de búsqueda de librerías o de
+    una decisión más pensada para establecer el código, pues ya se contaba con el 
+    método de Runge-Kutta explícito para poder resolver el problema.
+
+    Por otro lado, respecto a la elección e implementación del método implícito.
+    En primer lugar, se buscó en [1], el libro guía del curso, alguna indicación 
+    que pudiera servir, terminando este libro por referenciar a [2]. En [2], se
+    encontró un algoritmo para resolver sistemas de ecuaciones con matriz tridiag-
+    onal en el capítulo 3 de sistemas de ecuaciones lineales para, posteriormente, 
+    encontrar [3] y decidir finalmente, que el método Crank-Nicolson era el indicado
+     para resolver implícitamente la ecuación del calor.
 
     Esta elección tuvo un asidero teórico visto en clases, pues, en [4], se obser-
     vó que es un método implícito, para el que, en [5], existía un argumento muy
@@ -96,7 +103,7 @@
     tridiagonal junto a sus vectores, el vector solución, las condiciones de borde,
     y los índices que definen las posiciones de los inputs.
 
- */
+*/
 // ----------------------------  INICIO TAREA  ------------------------------ //
 
 // Importación de las librerías necesarias para la compilación correcta de los
@@ -106,7 +113,7 @@
 #include <math.h>
 
 // Constantes del material que constituye la barra cilíndrica.
-const double L = 10.0;                      // Longitud del cilindro.
+const double L = 10.0;                      // Longitud del cilindro
 const double kappa = 1.0;                   // Constante de conductividad térmica
 
 // Establecimiento de condiciones de borde para el problema.
@@ -118,48 +125,40 @@ const double Theta = -0.4;
 const double l = 1.0;
 
 // Discretización para poder resolver numéricamente.
-const int nnodes = 60;                              // Número de pasos temporales
-const double dx = L / (nnodes-1);                   // Ancho espacial (debe ser >= 1.0)
-const double dt = dx * dx / (kappa * 2.0);    // Ancho temporal
-const int nsteps = 1200;                            // Número de pasos espaciales
+const int nnodes = 60;                        // Número de nodos espaciales
+const double dx = L / (nnodes-1);             // Ancho espacial (debe ser >= 1.0)
+const double dt = dx * dx / (kappa * 2.0);    // Ancho temporal (ELEGIDO A PARTIR DE dx 
+                                              // PARA ASEGURAR ESTABILDAD EN MÉTODO EXPLÍCITO)
+const int nsteps = 300;                      // Número de pasos temporales
 
 // Definición computacional del sumidero de calor.
+double **initUMatrix();
+void freeUMatrix(double ** u);
+void printSolution(double **u, FILE* fp);
 double Gamma(double number);
 void F(double* Yin, double* Yout, int dim);
+void eRK4(double* Yin, double* Yout, double dt, int dim);
 void tridiag(double* a, double* b, double* c, double* r, double* u, int n);
+
 
 int main(int argc, const char * argv[]) {
 
-
-
     printf("**********************************************\n");
     printf("Resolución de la ecuacion de calor u_t = k*u_xx - f \n");
-    printf("mediante el método de Crank-Nicolson implícito\n");
+    printf("mediante el método de Runge-Kutta explícito\n");
     printf("**********************************************\n");
 
-    double u[nsteps][nnodes];
-
-    // Condición inicial, t = 0
-    for (int i = 0; i < nnodes; ++i) {
-      u[0][i] = 0.0;
-    }
-
-    // Condiciones de borde (x = 0; x = N)
-    for (int i = 0; i < nsteps; ++i) {
-          u[i][0] = T0;
-          u[i][nnodes-1] = Tf;
-    }
+    double **u_exp = initUMatrix();
+    double **u_imp = initUMatrix();
 
 
-    // Implementación de los vectores input constituyentes del sistema de ecuaciones
-    // a, b, c representan la matriz tridiagonal A del sistema
-    // AT^{n+1} = T^n + F
+    // INICIALIZACIÓN PARA MÉTODO IMPLÍCITO
     double *a = (double*)malloc(nnodes*sizeof(double));
     double *b = (double*)malloc(nnodes*sizeof(double));
     double *c = (double*)malloc(nnodes*sizeof(double));
     double *r = (double*)malloc(nnodes*sizeof(double));
 
-
+    // Seteo de la matriz tridiagonal
     for (int i = 0; i < nnodes; ++i) {
       a[i] = - kappa / (2*dx*dx);
       c[i] = a[i];
@@ -170,30 +169,92 @@ int main(int argc, const char * argv[]) {
     b[0] = 1; b[nnodes-1] = 1;
     c[0] = 0; a[nnodes-1] = 0;
 
-
-    // IMPLEMENTACIÓN -- MÉTODO CRANK-NICOLSON
-
-    for (int t = 0; t < nsteps-1; ++t) {
+    // IMPLEMENTACIÓN DE AMBOS MÉTODOS
+    for (int t=0; t<nsteps-1; t++) {
+      // EXPLÍCITO RUNGE-KUTTA 
+      eRK4(u_exp[t], u_exp[t+1], dt, nnodes);
+      // IMPLÍCITO CRANK-NICOLSON
       r[0] = T0;
       for (int x = 1; x < nnodes-1; ++x) {
-        r[x] = - a[x]*u[t][x-1] +
-                (1.0/dt + c[x] + a[x])*u[t][x]
-               - c[x]*u[t][x+1]
-               - Gamma(x*dx);
+        r[x] = - a[x]*u_imp[t][x-1] + (1.0/dt + c[x] + a[x])*u_imp[t][x]
+               - c[x]*u_imp[t][x+1] - Gamma(x*dx);
       }
       r[nnodes-1] = Tf;
 
 
-      tridiag(a, b, c, r, u[t+1], nnodes);
+      tridiag(a, b, c, r, u_imp[t+1], nnodes);
     }
 
     // Registro y retención de los datos obtenidos mediante el método numérico
     // para el posterior análisis y uso gráfico animado.
-    FILE *fp = fopen("res_implicit.csv", "w");
+    FILE *fp_exp = fopen("res_explicit.csv", "w");
+    FILE *fp_imp = fopen("res_implicit.csv", "w");
+
+    printSolution(u_exp, fp_exp);
+    printSolution(u_imp, fp_imp);
+
+    // Limpieza
+
+    fclose(fp_exp);
+    fclose(fp_imp);
+
+    freeUMatrix(u_exp);
+    freeUMatrix(u_imp);
+
+    free(a);
+    free(b);
+    free(c);
+    free(r);
+
+    // Exhibición de los valores finales como muestra de la efectividad del código
+    printf("Simulación terminada exitosamente\n");
+
+    return 0;
+}
+
+// Función sumidero-fuente en L/2 para la barra del calor descrita por la ecuación
+// del calor no homogénea.
+double Gamma(double number) {
+  return Theta / l * exp(-1.0 * pow((number - L/2)/l, 2));
+}
+
+void freeUMatrix(double ** u) {
+/* Función que realiza la limpieza de la memoria utlizada por la matriz u */
+
+  for (int i = 0; i < nsteps; ++i)
+    {
+      free(u[i]);
+    }
+    free(u);
+}
+
+double ** initUMatrix() {
+/* Inicialización de la matriz u que guarda las soluciones encontradas a través del tiempo */
+  double **u = (double **)malloc(nsteps * sizeof(double*));
+  for (int i = 0; i < nsteps; ++i) {
+    u[i] = (double *)malloc(nnodes * sizeof(double));
+  }
+
+  // Condición inicial (t = 0)
+  for (int i=0; i<nnodes; i++) {
+      u[0][i] = 0.0;
+  }
+
+  // Condiciones de borde (x = 0; x = N)
+  for (int i = 0; i < nsteps; ++i) {
+      u[i][0] = T0;
+      u[i][nnodes-1] = Tf;
+  }
+
+  return u;
+}
+
+void printSolution(double **u, FILE* fp) {
+/* Dada la matriz u RESUELTA imprime los resultados obtenidos en el file pointer fp */
 
     fprintf(fp, "t,");
     for (int i = 0; i < nnodes-1; ++i) {
-        fprintf(fp, "x=%2.3f,", i*dx);
+        fprintf(fp, "x=%2.3f,", dx*i);
     }
     fprintf(fp, "x=%2.3f\n", dx*(nnodes-1));
 
@@ -207,27 +268,8 @@ int main(int argc, const char * argv[]) {
         }
         fprintf(fp, "%10.5f\n", u[t][nnodes-1]);
     }
-
-   // Exhibición de los valores finales como muestra de la efectividad del código
-    printf("Simulación terminada exitosamente\n");
-
-    free(fp);
-    free(a);
-    free(b);
-    free(c);
-    free(r);
-
-    return 0;
 }
 
-
-// Función sumidero-fuente en L/2 para la barra del calor descrita por la ecuación
-// del calor no homogénea.
-double Gamma(double number) {
-  return Theta / l * exp(-1.0 * pow((number - L/2)/l, 2));
-}
-
-// Resolución de los n sistemas de ecuaciones lineales que alberga la matriz.
 void F(double* Yin, double* Yout, int dim) {
     Yout[0] = 0.0; Yout[dim-1] = 0.0;     // Truco para que las condiciones de borde funcionen
     for (int i = 1; i < dim-1; ++i) {
@@ -235,9 +277,48 @@ void F(double* Yin, double* Yout, int dim) {
     }
 }
 
+// Inicio - Método eRK-4
+void eRK4(double* Yin, double* Yout, double dt, int dim) {
+
+    /*
+    Argumentos necesarios:
+        - double* Yin: Arreglo input a realizar (Y_n)
+        - double* Yout: Arreglo output esperado luego de eRK4 (Y_(n+1))
+        - double dt: Paso temporal
+        - double dim: Número de entradas que posee Y_n
+    */
+
+  double Y1[dim], Y2[dim], Y3[dim], Y4[dim];
+  double _Y1[dim], _Y2[dim], _Y3[dim], _Y4[dim];
+
+  for (size_t i = 0; i < dim; i++) {  // Construcción de Y1[i] por eRK-4
+    Y1[i] = Yin[i];
+  }
+
+  F(Y1, _Y1, dim);  // Guardamos F(Y1) en un arreglo auxiliar _Y1
+  for (size_t i = 0; i < dim; i++) {
+    Y2[i] = dt/2 * _Y1[i] + Yin[i];
+  }
+
+  F(Y2, _Y2, dim); // Guardamos F(Y2) en un arreglo auxiliar _Y2
+  for (size_t i = 0; i < dim; i++) {
+    Y3[i] = dt/2 * _Y2[i] + Yin[i];
+  }
+
+  F(Y3, _Y3, dim); // Guardamos F(Y3) en un arreglo auxiliar _Y3
+  for (size_t i = 0; i < dim; i++) {
+    Y4[i] = dt*_Y3[i] + Yin[i];
+  }
+
+  F(Y4, _Y4, dim); // Guardamos F(Y4) en un arreglo auxiliar _Y4
+  for (size_t i = 0; i < dim; i++) {
+    Yout[i] = Yin[i] + dt/6 * (_Y1[i] + 2*_Y2[i] + 2*_Y3[i] + _Y4[i]);
+  }
+}
 
 void tridiag(double* a, double* b, double* c, double* r, double* u, int n)
-/* Resuelve para un vector u[1..n] el sistema de equaciones tridiagonal
+/* ALGORITMO OBTENIDO DESDE [2].
+   Resuelve para un vector u[1..n] el sistema de equaciones tridiagonal
    dado por
 
    |b_1 c_1  0  ...                   |   | u_1 |   | r_1 |
