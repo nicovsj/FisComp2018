@@ -1,0 +1,134 @@
+% Estructura documento
+\documentclass[twoside, 10 pt]{article}
+
+% idioma
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+
+% geometry
+\usepackage{geometry}
+\geometry{letterpaper} 
+\geometry{margin = 18.5 mm}
+\setlength{\parindent}{0cm} 
+\setlength{\columnsep}{2.5 mm} 
+
+% packages adicionales
+\usepackage{graphicx, footnote, footmisc, mathpazo}
+\usepackage{setspace, multicol, caption}
+\usepackage{amsmath, amsfonts, amssymb}
+
+% abstract
+\usepackage{abstract}
+\renewcommand{\abstractnamefont}{\normalfont\bfseries}
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape}
+\renewcommand{\abstractname}{abstract}   
+\renewcommand{\absnamepos}{empty}
+\usepackage[font = it]{caption}
+\usepackage{paralist}
+\usepackage{abstract}
+\renewcommand{\abstractname}{}
+
+% figuras y tablas
+\newenvironment{Figure}
+{\par\medskip\noindent\minipage{\linewidth}}
+{\endminipage\par\medskip}
+\addto\captionsspanish{\renewcommand{\figurename}{Figura}} 
+\usepackage{tabu} 
+\makeatletter
+\newenvironment{Tabla}
+{\def\@captype{table}}
+{}
+\makeatother
+\addto\captionsspanish{\renewcommand{\tablename}{Tabla}} 
+\renewcommand {\tabcolsep}{3pt} 
+\renewcommand{\thetable}{\arabic{table}}
+\usepackage[table]{xcolor} 
+\usepackage{empheq}	
+
+% títulos de secciones
+\usepackage{titlesec}
+\renewcommand\thesection{\Roman{section}}
+\titleformat{\section}[block]{\large\scshape\centering}{\thesection.}{1em}{}
+\titleformat{\subsection}[block]{\large\scshape}{\thesubsection.}{1em}{}
+
+%inicio del título
+\title{	
+\vspace{-25mm} % separación del borde superior al preámbulo inicial
+\normalfont \normalsize 
+\textsc{Facultad de Física de la Pontificia Universidad Católica de Chile} \\
+\textsc{Física Computacional $\left(\text{FIZ}1431\right)$ -- Segundo Semestre de 2018} \\
+\vspace*{2 mm}
+\hrule
+\vspace*{5 mm}
+\huge \textbf{Un modelo Monte Carlo para el transporte de partículas} \\
+\vspace{2mm} % separación del string del título con el número del laboratorio
+\normalsize 
+\textbf{Autores:} Juan M. González Brantes\footnote{Instituto de Física UC; \texttt{jmgonzalez4@uc.cl}} \ y Nicolás A. Van Sint Jan Campos\footnote{Instituto de Física UC; \texttt{nicovsj@uc.cl}}. \\
+\textbf{Profesor guía:} Edgardo Andrés Dörner Yaksic. \\
+\textbf{Fecha de entrega:} Jueves 29 de noviembre de 2018. \\
+\vspace{-18mm}} % separación entre resumen y título
+% fin del título
+
+\author{}
+\date{}
+
+%\begin{Figure}
+%\centering
+%\includegraphics[width = 0.85 \textwidth]{imagen1.png}
+%\captionof{figure}{Diagrama de reflexión de rayos X de planos adyacentes a un cristal, %donde $\Delta_{1}$, $\Delta_{2}$: Diferencia de trayectorias; $\theta$: ángulo rasante, %$d$: espaciamiento de planos adyacentes. Imagen tomada de LEYBOLD: Physics %Leaflets - Bragg Reflection P 6.3.3.1}
+%\end{Figure}
+
+%\begin{Tabla}
+%\begin{center}
+%\begin{spacing}{1.2}
+%\begin{tabular}{|c|c|c|}
+%\hline
+%\hline 
+%\rowcolor[rgb]{0.75,0.75,0.75} & Elemento & $\lambda$ pm \\
+%\hline
+%$K_{\beta}$ & Mo & 63.09 \\ \hline
+%$\lambda_{K}$ & Zr & 68.88 \\ \hline
+%$K_{\alpha}$ & Mo & 71.08 \\
+%\hline 
+%\end{tabular} 
+%\end{spacing}
+%\end{center}
+%\vspace{-10 mm}
+%\captionof{table}{Valores aceptados en la literatura para los parámetros exhibidos.}
+%\end{Tabla} 
+
+% ---------------------------------------------------------------------------------------------------------- %
+
+% inicio del informe
+\begin{document}
+\maketitle
+
+\begin{abstract} 
+\noindent 
+\normalfont{}
+\end{abstract}
+
+\begin{multicols}{2} % inicio columnas
+\section{Objetivos Propuestos} 
+\section{Introducción}
+\section{Metodología e Indumentaria}
+\section{Resultados y Discusión}
+\section{Conclusiones}
+
+%-------------------------------------------------------------------------------------------------------------------
+% modificar la bibliografía
+
+\small
+\begin{thebibliography}{a}
+\bibitem[1] CChapman, Brian N., <<Glow Discharge Processes: Sputtering and plasma etching>>, Primera edición, Editorial John Wiley $\&$ Sons, New York, 1980.
+\bibitem[2] RRaizer, Yuri P., <<Gas Discharge Physics>>, Segunda edición (corregida), Editorial Springer Verlag, Berlin-Heidelberg, 1997. (Basada en la segunda edición corregida original: <<Fizika gazovogo razryada>>, Editorial Nauka, Moscú, 1992.)
+\bibitem[3] RRuzic, David N., <<Electric probes for low temperature plasmas>>, Primera Edición, American Vaccum Society, New York City, 1994.
+\bibitem[4] WWissel, Stephanie A.; Zwicker, Andrew; Ross, Jerry; Gershman, Sophia; <<The use of dc glow discharges as undergraduate educational tools>>, American Association of Physics Teachers, United States of America, 2013.
+\bibitem[5] MMerlino, Robert L., <<Understanding Langmuir probe current-voltage characteristics>>, American Association of Physics Teachers, United States of America, 2007.
+\bibitem[6] AApuntes personales, profesor Heman Bhuyan, docente Instituto de Física, Pontificia Universidad Católica de Chile.
+\end{thebibliography}
+
+\end{multicols} 
+\end{document}
