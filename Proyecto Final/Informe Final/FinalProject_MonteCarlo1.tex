@@ -6,7 +6,6 @@
 \usepackage{graphicx}
 \usepackage{subfigure}
 \usepackage{gensymb}
-\usepackage{natbib}
 \usepackage{url}
 \usepackage[utf8x]{inputenc}
 \usepackage{amsmath}
@@ -73,14 +72,55 @@ Nicolás Van Sint Jan Campos, Instituto de Física, UC.} % Autor
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\listoffigures
+\listoftables
+
+\newpage
+
 \section{Resumen}
-ajajaja
-\section{Listado de Tablas y Figuras}
+Mediante la implementación de un programa computacional elaborado en el lenguaje de programación compilado C, se estudió una aplicación directa del método Monte Carlo: la modelización del transporte de partículas a través de estructuras radiactivas de emisión de fotones. Junto con ello, se estimó la probabilidad de transmisión y absorción de las partículas emanadas en el modelo, el que consistió, fundamentalmente, en un núcleo esférico de material fisionable, siendo el lugar de origen de las partículas emanadas, las que pueden atravesar una serie de cascarones esféricos concéntricos al núcleo de material moderador.
+
+\newpage
+
 \section{Introducción}
+La presente introducción se dividirá en dos partes: la primera, tendrá por objetivo definir el método Monte Carlo, darle un contexto histórico de gestación, para luego ejemplificar su acción mediante una situación; en tanto, la otra tendrá por ánimo tomar una aplicación directa del método, definir un marco teórico apropiado, y ligarlo al objeto de estudio en el presente informe.
+
+\subsection{El método Monte Carlo}
+El método de Monte Carlo --en adelante, MC-- es una técnica computacional estadística que tiene la capacidad de replicar numéricamente un modelo físico o matemático en un computador. Es importante señalar que, dada la naturaleza estocástica de estos procesos, se hace necesario el uso de números aleatorios, para así poder muestrearlos a partir de una función de densidad de probabilidad --en adelante, \emph{pdf}--. Así, el MC requiere ser reproducible a gran escala, pues de esta manera, la incertidumbre relativa a los resultados es lo suficientemente pequeña para entregar confiabilidad en la simulación: esto deriva en tiempos muy grandes para poder simular tales procesos. [1] \\
+
+El contexto histórico del MC tiene su origen en el desarrollo de la bomba atómica, es decir, en los dramáticos sucesos de la Segunda Guerra Mundial, cuya duración es fijada por la historia contemporánea entre 1939 y 1945, pues, en el marco de la utilización de armamento atómico y nuclear, el método nació como una manera de estudiar los procesos fisionables que ocurren en átomos altamente radioactivos. Así, en el Laboratorio Nacional de Los Álamos, Estados Unidos, el trabajo significó la simulación de problemas estocásticos de hidrodinámica en correlato con la difusión de neutrones en el material fisionable, siendo ésta misma difusión la componente aleatoria que precisaba el incipiente modelo: en una primera etapa, John von Neumann y Stanislaw Ulam refinaron este aspecto y los métodos de división de tareas; no obstante, hubo que esperar hasta 1948, cuando Enrico Fermi, Nicholas Metropolis y el mismo Ulam obtuvieran exitosamente estimadores para los autovalores de la Ecuación de Schrödinger para la captura de neutrones en el núcleo usando este método, lo que significó, a todas luces, el nacimiento del método y sus altas proyecciones en simulación de procesos aleatorios. [1] \\
+
+Un ejemplo de acción del método es considerar aquéllos programas de diseño asistido por computador [2]. Este tipo de programas pueden determinar de forma rápida el volumen de modelizaciones muy complejas: tales modelizaciones, en general, no tienen una expresión analítica que permita determinar \emph{a priori} su volumen, por lo que una solución es dividirlas en pequeñas modelizaciones, cuyos volúmenes sí puedan determinarse. Sin embargo, este procedimiento consume muchos recursos, tanto por dividir la modelización en submodelizaciones, como asimismo el cálculo del volumen de cada submodelización. Es aquí cuando el modelo MC surge como la alternativa más eficiente, robusta y precisa para poder resolver problemas como ese tipo. Dado que, el software sí conoce la expresión analítica de la geometría de la modelización, lo que hará MC es determinar si un punto determinado está dentro del modelo o no, lo que, evidentemente provoca un costo mucho menor que el de determinar un volumen en reiteradas ocasiones. Entonces, para el ejemplo, sea el volumen que se quiere calcular $\Omega$ y el volumen a usar $\Omega'$; MC actuará de la siguiente manera:
+
+\begin{itemize}
+\item El software pondrá $\Omega$ dentro de un volumen conocido $\Omega'$, lo más parecido a $\Omega$.
+\item Luego, generará un punto aleatorio al interior de $\Omega'$, y registrará si el punto pertenece también a $\Omega$ o no. Aquí, MC repetirá hartas veces el procedimiento, lo que conseguirá a la larga, un registro ostensible de puntos, tanto dentro como fuera.
+\item Finalmente, dado que, la probabilidad de que caiga dentro es proporcional a $\Omega$, entonces la proporción de puntos que están dentro de $\Omega$ respecto a la cantidad de puntos generados es la misma proporción de $\Omega'$.
+\end{itemize}
+
+Si, por ejemplo, el 50$\%$ de los puntos están dentro de $\Omega'$, entonces, el modelo ocupa el 50$\%$ de $\Omega$. De aquí, la importancia de que mientras más puntos genere el software, menor será el error de la estimación del volumen.
+
+\subsection{Modelización del transporte de partículas}
+Como se indicó anteriormente, el método provee la aptitud de recrear un experimento por computador y estimar el comportamiento del modelo que se quiere simular: en este espíritu, acá se abogará por definir una aplicación del MC a un problema simplificado de transporte de partículas, sus interacciones y comportamiento en un medio esférico. \\
+
+En general, una partícula es emanada desde una fuente fija o fisionable con una posición, dirección y energía aleatorias. Cada partícula tiene la probabilidad de viajar libremente en un medio antes de la interacción con el núcleo, donde el MC simulará \textbf{la historia} de esta partícula en su seguidilla de \emph{nacimientos}. El estudio teórico sobre el balance de partículas en un medio viene entregado por la ecuación lineal de Boltzmann --en adelante, LBE-- para un espacio de fases $\text{d}^3r \text{d}E \text{d}\Omega$. 
+
+
+
 \section{Indumentaria y Metodología}
 \section{Resultados y Discusión}
 \section{Conclusiones}
-\section{Referencias}
+
+
+% Inicio referencias
+\begin{thebibliography}{0}
+\bibitem{1} Edgardo Dörner, <<Clase 23: Método Monte Carlo>>, Diapositivas del curso Física Computacional, Instituto de Física, Pontificia Universidad Católica de Chile, 2018.
+\bibitem{2} Dirk P. Kroese, Thomas Taimre, Zdravko I. Botev, <<Handbook of Monte Carlo Methods>>, First Edition, John Wiley $\&$ Sons, New Jersey, Estados Unidos de América, 2012.
+\bibitem{3} Alireza Haghighat, <<Monte Carlo Methods for Particle Transport>>, Primera Edición, CRC Press, Boca Raton, Florida, Estados Unidos de América, 2014.
+\bibitem{4} Edgardo Dörner, <<Clase 24: Transporte Monte Carlo de partículas>>, Diapositivas del curso Física Computacional, Instituto de Física, Pontificia Universidad Católica de Chile, 2018.
+\bibitem{5} William R. Hendee, <<Monte Carlo Techniques in Radiation Therapy>> Imaging in Medical Diagnosis and Therapy Series Editor, Primera Edición, Taylor $\&$ Francis Group, Boca Raton, Florida, Estados Unidos de América, 2013. 
+\end{thebibliography}
+% Fin referencias
 
 \end{document}
 
