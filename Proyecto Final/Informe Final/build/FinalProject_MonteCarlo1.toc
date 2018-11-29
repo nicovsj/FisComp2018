@@ -1,8 +1,0 @@
-\babel@toc {spanish}{}
-\contentsline {section}{\numberline {1}Resumen}{3}
-\contentsline {section}{\numberline {2}Introducci\IeC {\'o}n}{4}
-\contentsline {subsection}{\numberline {2.1}El m\IeC {\'e}todo Monte Carlo}{4}
-\contentsline {subsection}{\numberline {2.2}Modelizaci\IeC {\'o}n del transporte de part\IeC {\'\i }culas}{5}
-\contentsline {section}{\numberline {3}Indumentaria y Metodolog\IeC {\'\i }a}{6}
-\contentsline {section}{\numberline {4}Resultados y Discusi\IeC {\'o}n}{6}
-\contentsline {section}{\numberline {5}Conclusiones}{6}

@@ -1,88 +1,5 @@
-\documentclass[12pt]{article}
-\usepackage[utf8x]{inputenc}
-\usepackage[spanish]{babel}
-\usepackage{amssymb,amsmath,amsthm,amsfonts}
-\usepackage{calc}
-\usepackage{graphicx}
-\usepackage{subfigure}
-\usepackage{gensymb}
-\usepackage{url}
-\usepackage[utf8x]{inputenc}
-\usepackage{amsmath}
-\usepackage{graphicx}
-\graphicspath{{images/}}
-\usepackage{parskip}
-\usepackage{fancyhdr}
-\usepackage{vmargin}
-\setmarginsrb{3 cm}{2.5 cm}{3 cm}{2.5 cm}{1 cm}{1.5 cm}{1 cm}{1.5 cm}
+%!TEX root = ../main/main.tex
 
-\title{Un modelo Monte Carlo para el transporte de partículas} % Titulo
-\author{\normalsize Juan Manuel González Brantes, Instituto de Física, UC. \\
-Nicolás Van Sint Jan Campos, Instituto de Física, UC.} % Autor
-\date{29 de noviembre de 2018} % Fecha
-
-\makeatletter
-\let\thetitle\@title
-\let\theauthor\@author
-\let\thedate\@date
-\makeatother
-
-\pagestyle{fancy}
-\fancyhf{}
-\rhead{González y Van Sint Jan}
-\lhead{MC para transporte de partículas}
-\cfoot{\thepage}
-
-\begin{document}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{titlepage}
-	\centering
-    \vspace*{-2.5 cm}
-    \includegraphics[scale = 0.95]{uc.png} \\ [0.5 cm]								
-    \textsc{\Large Pontificia Universidad Católica de Chile} \\ [1.0 cm]
-	\textsc{\large Proyecto Final de Curso} \\ [0.5 cm]																
-	\textsc{\large FIZ1431 $\star$ Física Computacional} \\ [0.5 cm]									
-	\rule{\linewidth}{0.2 mm} \\ [0.4 cm]
-	{ \huge \bfseries \thetitle} \\
-	\rule{\linewidth}{0.2 mm} \\ [1.0 cm]
-	
-	\begin{minipage}{0.4\textwidth}
-		\begin{center} \large
-			\textbf{\textsf{Autores:}} \\
-			\theauthor\linebreak
-			
-			\textbf{\textsf{\large Profesor:}} \\
-			Edgardo Dörner Yaksic \linebreak
-			
-			\textbf{\textsf{\large Fecha de entrega:}} \\
-			29 de noviembre de 2018 \linebreak
-			\end{center}
-	\end{minipage}\\[2 cm]
-	 
-	\vfill
-	
-\end{titlepage}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\tableofcontents
-\pagebreak
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\listoffigures
-\listoftables
-
-\newpage
-
-\section{Resumen}
-Mediante la implementación de un programa computacional elaborado en el lenguaje de programación compilado C, se estudió una aplicación directa del método Monte Carlo: la modelización del transporte de partículas a través de estructuras radiactivas de emisión de fotones. Junto con ello, se estimó la probabilidad de transmisión y absorción de las partículas emanadas en el modelo, el que consistió, fundamentalmente, en un núcleo esférico de material fisionable, siendo el lugar de origen de las partículas emanadas, las que pueden atravesar una serie de cascarones esféricos concéntricos al núcleo de material moderador.
-
-\newpage
-
-\section{Introducción}
 La presente introducción se dividirá en dos partes: la primera, tendrá por objetivo definir el método Monte Carlo, darle un contexto histórico de gestación, para luego ejemplificar su acción mediante una situación; en tanto, la otra tendrá por ánimo tomar una aplicación directa del método, definir un marco teórico apropiado, y ligarlo al objeto de estudio en el presente informe.
 
 \subsection{El método Monte Carlo}
@@ -104,25 +21,5 @@ Si, por ejemplo, el 50$\%$ de los puntos están dentro de $\Omega'$, entonces, e
 Como se indicó anteriormente, el método provee la aptitud de recrear un experimento por computador y estimar el comportamiento del modelo que se quiere simular: en este espíritu, acá se abogará por definir una aplicación del MC a un problema simplificado de transporte de partículas, sus interacciones y comportamiento en un medio esférico. \\
 
 En general, una partícula es emanada desde una fuente fija o fisionable con una posición, dirección y energía aleatorias. Cada partícula tiene la probabilidad de viajar libremente en un medio antes de la interacción con el núcleo, donde el MC simulará \textbf{la historia} de esta partícula en su seguidilla de \emph{nacimientos}. El estudio teórico sobre el balance de partículas en un medio viene entregado por la ecuación lineal de Boltzmann --en adelante, LBE-- para un espacio de fases $\text{d}^3r \text{d}E \text{d}\Omega$. 
-
-
-
-\section{Indumentaria y Metodología}
-\section{Resultados y Discusión}
-\section{Conclusiones}
-
-
-% Inicio referencias
-\begin{thebibliography}{0}
-\bibitem{1} Edgardo Dörner, <<Clase 23: Método Monte Carlo>>, Diapositivas del curso Física Computacional, Instituto de Física, Pontificia Universidad Católica de Chile, 2018.
-\bibitem{2} Dirk P. Kroese, Thomas Taimre, Zdravko I. Botev, <<Handbook of Monte Carlo Methods>>, First Edition, John Wiley $\&$ Sons, New Jersey, Estados Unidos de América, 2012.
-\bibitem{3} Alireza Haghighat, <<Monte Carlo Methods for Particle Transport>>, Primera Edición, CRC Press, Boca Raton, Florida, Estados Unidos de América, 2014.
-\bibitem{4} Edgardo Dörner, <<Clase 24: Transporte Monte Carlo de partículas>>, Diapositivas del curso Física Computacional, Instituto de Física, Pontificia Universidad Católica de Chile, 2018.
-\bibitem{5} William R. Hendee, <<Monte Carlo Techniques in Radiation Therapy>> Imaging in Medical Diagnosis and Therapy Series Editor, Primera Edición, Taylor $\&$ Francis Group, Boca Raton, Florida, Estados Unidos de América, 2013. 
-\end{thebibliography}
-% Fin referencias
-
-\end{document}
-
 
 
