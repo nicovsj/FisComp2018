@@ -26,19 +26,20 @@ void initRng(long int seed, long int a, long int c, long int m,
 long int setRng(struct Rng *rng);
 
 double getRng(struct Rng *rng);
+double getR(double x, double y, double z);
 
 // Parametros del problema
 const int nreg = 3; // numero de regiones (sin considerar region anterior y
                     // posterior a la placa)
 
 // Los siguientes parametros se entregan para cada region.
-const double d[] = {0.10, 0.10, 0.10};    // espesor de las regiones del
+const double d[] = {0.5, 0.1, 0.1, 0.1};    // espesor de las regiones del
                                         // atenuador (cm)
-const double sigma_t[] = {0.1, 10.0, 100.0}; // seccion eficaz total (cm^-1)
-const double sigma_a[] = {0.01, 0.1, 10.0};//seccion eficaz de absorcion (cm^-1)
-const int nhist = 1000000; // numero de historias
+const double sigma_t[] = {0.05, 0.1, 10.0, 100.0}; // seccion eficaz total (cm^-1)
+const double sigma_a[] = {0.005, 0.01, 0.1, 10.0};//seccion eficaz de absorcion (cm^-1)
+const int nhist = 10000; // numero de historias
 const int nbatch = 10;  // grupos estadisticos
-const int ptracks = 0;  // guardar posicion particulas
+const int ptracks = 1;  // guardar posicion particulas
 
 int main(int argc, const char * argv[]) {
     // Inicio del programa.
@@ -75,7 +76,7 @@ int main(int argc, const char * argv[]) {
     memset(apdep2, 0.0, (nreg+2)*sizeof(double));
 
     // Inicializar geometria y arreglo de scoring
-    zbounds[0] = 0.0;
+    zbounds[0] = d[0];
     for (int i=0; i<nreg; i++) {
         zbounds[i+1] = zbounds[i] + d[i];
     }
@@ -85,7 +86,9 @@ int main(int argc, const char * argv[]) {
     double x, y, z;             // posicion de la particula
     double u, v, w;             // direccion de la particula
     double theta0, phi0;        // angulos de dispersion
+    double xnew, ynew, znew;    // posiciones después de aplicar el camino libre medio
     double unew, vnew, wnew;    // direccion despues de la dispersion
+    double a, b, c;
     double s;                   // sqrt(1-w^2)
     
     int ir;  // region actual de la particula.
@@ -97,7 +100,6 @@ int main(int argc, const char * argv[]) {
                 // nreg+1: region posterior al atenuador
     
     double tstep; // distancia a la siguiente interaccion
-    double dist;  // distancia hacia uno de los bordes
     double rnno;
     
     int ptrans;     // indica si la particula debe seguir transportandose antes
@@ -111,11 +113,27 @@ int main(int argc, const char * argv[]) {
     for (int ibatch=0; ibatch<nbatch; ibatch++) {
         
         for (int ihist=0; ihist<nperbatch; ihist++) {
+
+            // Radio del núcleo
+            double R = zbounds[0];
+
+            // Elegimos el punto en el núcleo aleatoriamente (coord esféricas)
+            double r = getRng(&rng) * R;
+            double theta = getRng(&rng) * M_PI;
+            double phi = getRng(&rng) * M_PI * 2;
+
             
-            // Inicializacion de la particula
-            x = 0.0; y = 0.0; z = 0.0;       // i.e., frente al atenuador
-            u = 0.0; v= 0.0; w = 1.0;             // perpendicular a la placa
-            ir = 1;                               // en la primera region de la placa
+            // Pasamos a cartesianas
+            x = r*sin(theta)*cos(phi); y = r*sin(theta)*sin(phi); z = r*cos(theta);  
+            // Elegimos la dirección (componente entre -1..1)
+            double u0 = getRng(&rng) * 2 -1; 
+            double v0 = getRng(&rng) * 2 -1; 
+            double w0 = getRng(&rng) * 2 -1; 
+
+            s = getR(u0, v0, w0);
+            u = u0/s; v = v0/s; w = w0/s;
+
+            ir = 0;                               // en el núcleo
             idisc = 0; ptrans=1;
             
             if (ptracks) {
@@ -133,47 +151,41 @@ int main(int argc, const char * argv[]) {
                     
                     // Guardamos la region actual de la particula.
                     irnew = ir;
+
+                    // Calulamos a donde debe parar la partícula si se mueve la distancia
+                    s = getR(u, v, w);
+                    xnew = x + (u/s)*tstep; ynew = y + (v/s)*tstep; znew = z + (w/s)*tstep;
                     
                     // Ahora debemos calcular la distancia a la siguiente
                     // frontera en la direccion de propagacion de la particula.
                     // Notese que al ser una placa 1D nos interesa solamente
                     // analizar la direccion z.
-                    
-                    if(w < 0.0) {
-                        // La particula viaja hacia el borde anterior de la
-                        // placa.
-                        dist = -(zbounds[ir-1] - z)/w;
-                        
-                        // Ahora revisamos si la particula cambia de region.
-                        if (dist < tstep) {
-                            tstep = dist;
-                            if (irnew != 0) {
-                                irnew -= 1;
-                            } else {
-                                // Indicamos que la particula abandona la
-                                // geometria.
-                                idisc = 1;
-                            }
+
+                    R = 0;
+
+                    if (getR(xnew, ynew, znew) >= zbounds[ir]) {
+                        if (irnew != nreg+1) {
+                            R = zbounds[ir];
+                            irnew += 1;
+                        }
+                        else {
+                            idisc = 1;
                         }
                     }
-                    else if(w > 0.0) 
-{                        // La particula viaja hacia el borde posterior de la
-                        // placa.
-                        dist = (zbounds[ir] - z)/w;
-    
-                        // Ahora revisamos si la particula cambia de region.
-                        if (dist < tstep) {
-                            tstep = dist;
-                            if (irnew != nreg+1) {
-                                irnew += 1;
-                            } else {
-                                // Indicamos que la particula abandona la
-                                // geometria.
-                                idisc = 1;
-                            }
+                    else if (ir != 0) {
+                        if (getR(xnew, ynew, znew) <= zbounds[ir-1]) {
+                            R = zbounds[ir-1];
+                            irnew -= 1;
                         }
                     }
+
+                    if (R) {
+                        b = 2*(u*x+v*y+z*w);
+                        c = x*x+y*y+z*z - R*R;
+                        tstep = (-b + sqrt(b*b-4*c)) / 2;
+                    }
                     
+ 
                     if (idisc == 1) {
                         // La particula abandona la geometria.
                         break;
@@ -182,7 +194,7 @@ int main(int argc, const char * argv[]) {
                     if (ptracks) {
                         // Guardamos la posicion de la particula antes del
                         // transporte.
-                        fprintf(fp, "%10.5f %10.5f %10.5f ", x, y, z);
+                        fprintf(fp, "%10.5f,%10.5f,%10.5f,", x, y, z);
                     }
                     
                     // Transportamos la particula.
@@ -193,7 +205,7 @@ int main(int argc, const char * argv[]) {
                     if (ptracks) {
                         // Guardamos la posicion de la particula despues del
                         // transporte.
-                        fprintf(fp, "%10.5f %10.5f %10.5f\n", x, y, z);
+                        fprintf(fp, "%10.5f,%10.5f,%10.5f\n", x, y, z);
                     }
                     
                     // Si llegamos a este punto y la particula no ha cambiado de
@@ -280,14 +292,13 @@ int main(int argc, const char * argv[]) {
     
     double pdep_abs = 0.0;
     double updep_abs = 0.0;
-    for (int i=1; i<=nreg; i++) {
+    for (int i=0; i<=nreg; i++) {
         pdep_abs += pdep[i];
         updep_abs += pow(updep[i], 2.0);
     }
     updep_abs = sqrt(updep_abs);
     
-    printf("Probabilidad de reflexion : %6.5f +/- %6.5f \n",
-           pdep[0]/nperbatch, updep[0]/nperbatch);
+
     printf("Probabilidad de absorcion : %6.5f +/- %6.5f \n",
            pdep_abs/nperbatch, updep_abs/nperbatch);
     printf("Probabilidad de transmision : %6.5f +/- %6.5f \n",
@@ -344,4 +355,8 @@ double getRng(struct Rng *rng) {
     rnno = (double)setRng(rng)/rng->m;
     
     return rnno;
+}
+
+double getR(double x, double y, double z) {
+    return sqrt(x*x+y*y+z*z);
 }
