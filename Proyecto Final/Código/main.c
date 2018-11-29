@@ -78,7 +78,7 @@ int main(int argc, const char * argv[]) {
     // Inicializar geometria y arreglo de scoring
     zbounds[0] = d[0];
     for (int i=0; i<nreg; i++) {
-        zbounds[i+1] = zbounds[i] + d[i];
+        zbounds[i+1] = zbounds[i] + d[i+1];
     }
     
     // Inicio de la simulacion
@@ -88,7 +88,7 @@ int main(int argc, const char * argv[]) {
     double theta0, phi0;        // angulos de dispersion
     double xnew, ynew, znew;    // posiciones después de aplicar el camino libre medio
     double unew, vnew, wnew;    // direccion despues de la dispersion
-    double a, b, c;
+    double b, c;             // coeficientes de una ecuación cuadrática
     double s;                   // sqrt(1-w^2)
     
     int ir;  // region actual de la particula.
@@ -126,9 +126,9 @@ int main(int argc, const char * argv[]) {
             // Pasamos a cartesianas
             x = r*sin(theta)*cos(phi); y = r*sin(theta)*sin(phi); z = r*cos(theta);  
             // Elegimos la dirección (componente entre -1..1)
-            double u0 = getRng(&rng) * 2 -1; 
-            double v0 = getRng(&rng) * 2 -1; 
-            double w0 = getRng(&rng) * 2 -1; 
+            double u0 = getRng(&rng)*2 - 1; 
+            double v0 = getRng(&rng)*2 - 1; 
+            double w0 = getRng(&rng)*2 - 1; 
 
             s = getR(u0, v0, w0);
             u = u0/s; v = v0/s; w = w0/s;
@@ -152,35 +152,63 @@ int main(int argc, const char * argv[]) {
                     // Guardamos la region actual de la particula.
                     irnew = ir;
 
-                    // Calulamos a donde debe parar la partícula si se mueve la distancia
+                    // Calculamos a donde debe parar la partícula si se mueve la distancia
                     s = getR(u, v, w);
                     xnew = x + (u/s)*tstep; ynew = y + (v/s)*tstep; znew = z + (w/s)*tstep;
-                    
-                    // Ahora debemos calcular la distancia a la siguiente
-                    // frontera en la direccion de propagacion de la particula.
-                    // Notese que al ser una placa 1D nos interesa solamente
-                    // analizar la direccion z.
 
+                    // Hacemos que R sea cero de tal manera de realizar un control de flujo
+                    // modificando este valor después si es que se cambia de región
                     R = 0;
 
-                    if (getR(xnew, ynew, znew) >= zbounds[ir]) {
-                        if (irnew != nreg+1) {
-                            R = zbounds[ir];
+                    // Dado que tenemos a donde debería parar la partícula, podemos revisar
+                    // si es que se sale del cascarón revisando la distancia del nuevo punto al
+                    // centro de los cascarones
+                    if (ir != nreg+1) { // Si estamos en los cascarones o el núcleo
+
+                        if (getR(xnew, ynew, znew) >= zbounds[ir]) { // Revisa si hay que cambiar al cascarón siguiente
+                            R = zbounds[ir]; 
                             irnew += 1;
                         }
-                        else {
-                            idisc = 1;
+
+                        else if (ir != 0) { // Si estamos en un cascarón
+                            if (getR(xnew, ynew, znew) <= zbounds[ir-1]) { // Revisa si hay que cambiar al cascarón anterior
+                                R = zbounds[ir-1];
+                                irnew -= 1;
+                            }
                         }
+                        
                     }
-                    else if (ir != 0) {
-                        if (getR(xnew, ynew, znew) <= zbounds[ir-1]) {
-                            R = zbounds[ir-1];
-                            irnew -= 1;
+
+                    else { // Si estamos en la región de afuera 
+                        if (getR(xnew, ynew, znew) >= zbounds[ir-1]) { // Nos estamos saliendo de 
+                            idisc = 1; // Nos salimos de la geometría
                         }
                     }
 
-                    if (R) {
-                        b = 2*(u*x+v*y+z*w);
+                    if (R) { // Si nos cambiamos de región tenemos que calcular la distancia hasta la frontera
+
+                        /* Acá tenemos que resolver una ecuación cuadrática que se consigue al intersectar la línea
+
+                                (x, y, z) = (x0, y0, z0) + tstep * (u, v, w)    con tstep = [0, inf)
+
+                            Con la esfera
+
+                                x^2 + y^2 + z^2 = R^2
+
+                            Obtenemos la siguiente ecuación cuadrática para tstep
+
+                                tstep^2 *(u^2 + v^2 + y^2) + tstep*2*(u*x0 + v*y0+ w*z0) + (x0^2 + y0^2 + z0^2 - R^2) = 0
+
+                                a * tstep^2 + b * tstep + c = 0
+
+                            La solución positiva será (dado que (u^2 + v^2 + y^2) = 1)
+
+                                tstep = 1/2 * (-b + sqrt(b^2 - 4*c ))
+
+                            Que es lo que hacemos justamente*/
+                        // a = 1.0 por lo que no contribuye en la resolución de la ecuación cuadrática
+
+                        b = 2*(u*x+v*y+w*z);
                         c = x*x+y*y+z*z - R*R;
                         tstep = (-b + sqrt(b*b-4*c)) / 2;
                     }
@@ -201,6 +229,7 @@ int main(int argc, const char * argv[]) {
                     x += u*tstep;
                     y += v*tstep;
                     z += w*tstep;
+
                     
                     if (ptracks) {
                         // Guardamos la posicion de la particula despues del
