@@ -1,2 +1,33 @@
 %!TEX root = ../main/main.tex
 
+La siguiente tabla resume las probabilidades de absorción $P_{abs}$ y transmisión $P_{trans}$ del problema para distintos números de historias simuladas $N_{hist}$. 
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|c|c|c|}
+		\hline
+		$N_{hist}$ & $P_{abs}$        & $P_{trans}$      \\ \hline
+		1.000           & $0.98900 \pm 0.00959$ & $0.01100 \pm 0.00233$ \\ \hline
+		100.000         & $0.99161 \pm 0.00109$ & $0.00839 \pm 0.00027$ \\ \hline
+		10.000.000      & $0.99185 \pm 0.00011$ & $0.00815 \pm 0.00003$ \\ \hline
+	\end{tabular}
+	\caption{Resultados del modelo}
+\end{table}
+
+Se recuerda que las restricciones del problema están dadas por enunciado, las cuales son las siguientes:
+
+
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		Región & $\Sigma_t$ & $\Sigma_a$ & Espesor      \\ \hline
+		Núcleo & $0.05$ & $0.005$ & $0.5$ \\ \hline
+		Cascarón 1 & $0.1$ & $0.01$ & $0.1$ \\ \hline
+		Cascarón 2 & $10.0$ & $0.1$ & $0.1$ \\ \hline
+		Cascarón 3 & $100.0$ & $10.0$ & $0.1$ \\ \hline
+	\end{tabular}
+	\caption{Restricciones del problema}
+\end{table}
+
+Podemos notar que la probabilidad de absorción es muy grande para los constreñimientos dados, lo que se condice con lo esperado, dado que en las capas exteriores el camino libre medio recorrido por la partícula entre cada interacción es muy pequeño, por lo que es muy probable que ocurran muchas interacciones antes de que la partícula escape de la geometría. La probabilidad de absorción, dado que ocurre una interacción, es siempre del $10\%$ para cada región, entonces lo que limita la transmisión de las partículas es la sección eficaz $\Sigma_t$.

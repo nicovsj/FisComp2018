@@ -17,9 +17,24 @@ Un ejemplo de acción del método es considerar aquéllos programas de diseño a
 
 Si, por ejemplo, el 50$\%$ de los puntos están dentro de $\Omega'$, entonces, el modelo ocupa el 50$\%$ de $\Omega$. De aquí, la importancia de que mientras más puntos genere el software, menor será el error de la estimación del volumen.
 
-\subsection{Modelización del transporte de partículas}
+subsection{Modelización del transporte de partículas}
 Como se indicó anteriormente, el método provee la aptitud de recrear un experimento por computador y estimar el comportamiento del modelo que se quiere simular: en este espíritu, acá se abogará por definir una aplicación del MC a un problema simplificado de transporte de partículas, sus interacciones y comportamiento en un medio esférico. \\
 
-En general, una partícula es emanada desde una fuente fija o fisionable con una posición, dirección y energía aleatorias. Cada partícula tiene la probabilidad de viajar libremente en un medio antes de la interacción con el núcleo, donde el MC simulará \textbf{la historia} de esta partícula en su seguidilla de \emph{nacimientos}. El estudio teórico sobre el balance de partículas en un medio viene entregado por la ecuación lineal de Boltzmann --en adelante, LBE-- para un espacio de fases $\text{d}^3r \text{d}E \text{d}\Omega$. 
+En general, una partícula es emanada desde una fuente, la que puede estar fija o bien puede ser material fisionable. Esta fuente está en una posición, dirección y energía aleatorias. Entonces, cada partícula tiene una oportunidad de viajar de manera libre en un medio antes de interactuar con el núcleo. Diferentes tipos de interacciones podrían ocurrir, dependiendo del tipo de partícula y su energía, y la composición propiamente tal del medio. Así, estas interacciones, las que pueden ser descritas mediante \emph{pdfs} --los que están establecidos usando data nuclear y principios físicos-- liderarán la producción de una o más partículas, su propósito, sus fluctuaciones energéticas y su dirección: se dará por terminada la simulación si la partícula se escapa del medio. En un MC, la \emph{historia} de cada partícula de nacimiento en nacimiento es seguida, siendo los conteos de interés esperados estimados mediante la simulación de numerosas historias, evaluando la varianza asociada y las incertidumbres relativas de las mismas. \\
+
+La ecuación lineal de Boltzmann --en adelante, LBE-- representa el balance de partículas en un espacio de fase, el que definimos como $\text{d}f = \text{d}^3r \ \text{d}E \ \text{d}\Omega$. Así, la LBE independiente del tiempo, dada una fuente fija, se define por:
+
+\begin{equation}
+\label{1}
+\begin{split}
+\hat{\Omega} \cdot \nabla\Psi\left(\overline{r}, E, \hat{\Omega}\right) + \Sigma_{t}\left(\overline{r}, E\right)\Psi\left(\overline{r}, E, \hat{\Omega}\right) & = \int_{0}^{\infty} \text{d}E' \int_{4\pi} \text{d}\Omega' \Sigma_{s}\left(\overline{r}, E' \rightarrow E, \hat{\Omega}' \cdot \hat{\Omega}\right) \\
+& \times \Psi\left(\overline{r}', E', \hat{\Omega}'\right) + S\left(\overline{r}, E, \hat{\Omega}\right)
+\end{split}
+\end{equation}
+
+donde $\Psi = v\left(E\right) n\left(\overline{r}, E, \hat{\Omega}\right)$ es el flujo angular esperado en el espacio de fases, $v\left(E\right)$ es la velocidad de la partícula a una energía $E$, y $n$ es la densidad de partícula por número en el espacio de fase; $\Sigma_{t}\left(\overline{r}, E\right)$ es el total de secciones eficaces macroscópicas que indican probabilidad por unidad de interacciones núcleo-partícula de todo tipo a una posición $\overline{r}$ y energía $E$, $\Sigma_{s}\left(\overline{r}, E' \rightarrow E, \hat{\Omega}' \cdot \hat{\Omega} \right)$ es la sección eficaz diferencial de \emph{scattering}, indicando la probabilidad por unidad de longitud que sigue un nucleo-partícula chocando a una partícula que irá desde una energía $E'$ a $E$ en un diferencial de energía $\text{d}E$ y una dirección $\Omega'$ en $\text{d}\Omega$ alrededor de $\Omega$, y $S\left(\overline{r}, E, \hat{\Omega}\right)$ es la densidad de fuente fija en el espacio de fase. \\
+
+Físicamente, la ecuación (\ref{1}) es un balance de la tasa de perdida de partículas (el lado izquierdo) y la tasa de producción de partículas (lado derecho), siendo los términos de la ecuación --que fueron explicados en el párrafo anterior-- la representación de los valores esperados (medios) de producción y pérdida de partículas a través de diferentes procesos aleatorios. Así, dado que, la LBE permite modelar el transporte de partículas, se basará en esta ecuación, y sus ecuaciones corolarias para poder modelar en MC la situación pedida. \\
+
 
 

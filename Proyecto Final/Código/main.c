@@ -88,7 +88,7 @@ int main(int argc, const char * argv[]) {
     double theta0, phi0;        // angulos de dispersion
     double xnew, ynew, znew;    // posiciones después de aplicar el camino libre medio
     double unew, vnew, wnew;    // direccion despues de la dispersion
-    double b, c;             // coeficientes de una ecuación cuadrática
+    double a, b, c;             // coeficientes de una ecuación cuadrática
     double s;                   // sqrt(1-w^2)
     
     int ir;  // region actual de la particula.
@@ -147,7 +147,7 @@ int main(int argc, const char * argv[]) {
                 do {
                     // Primero debemos muestrear el camino libre.
                     rnno = getRng(&rng);
-                    tstep = -(1.0/sigma_t[ir-1])*log(1.0 - rnno);
+                    tstep = -(1.0/sigma_t[ir])*log(1.0 - rnno);
                     
                     // Guardamos la region actual de la particula.
                     irnew = ir;
@@ -168,12 +168,14 @@ int main(int argc, const char * argv[]) {
                         if (getR(xnew, ynew, znew) >= zbounds[ir]) { // Revisa si hay que cambiar al cascarón siguiente
                             R = zbounds[ir]; 
                             irnew += 1;
+                            a = 1;
                         }
 
                         else if (ir != 0) { // Si estamos en un cascarón
                             if (getR(xnew, ynew, znew) <= zbounds[ir-1]) { // Revisa si hay que cambiar al cascarón anterior
                                 R = zbounds[ir-1];
                                 irnew -= 1;
+                                a = 1;
                             }
                         }
                         
@@ -210,7 +212,7 @@ int main(int argc, const char * argv[]) {
 
                         b = 2*(u*x+v*y+w*z);
                         c = x*x+y*y+z*z - R*R;
-                        tstep = (-b + sqrt(b*b-4*c)) / 2;
+                        tstep = (-b + a * sqrt(b*b-4*c)) / 2;
                     }
                     
  
@@ -260,7 +262,7 @@ int main(int argc, const char * argv[]) {
                 
                 // Debemos seleccionar una interaccion
                 rnno = getRng(&rng);
-                if (rnno <= sigma_a[ir-1]/sigma_t[ir-1]) {
+                if (rnno <= sigma_a[ir]/sigma_t[ir]) {
                     // La particula es absorbida
                     pdep[ir] += 1.0;
                     break;
