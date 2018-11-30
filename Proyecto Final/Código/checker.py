@@ -10,6 +10,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
+ax.set_aspect('equal')
 
 # Make data
 u = np.linspace(0, 2 * np.pi, 100)

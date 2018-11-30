@@ -30,4 +30,15 @@ Se recuerda que las restricciones del problema están dadas por enunciado, las c
 	\caption{Restricciones del problema}
 \end{table}
 
-Podemos notar que la probabilidad de absorción es muy grande para los constreñimientos dados, lo que se condice con lo esperado, dado que en las capas exteriores el camino libre medio recorrido por la partícula entre cada interacción es muy pequeño, por lo que es muy probable que ocurran muchas interacciones antes de que la partícula escape de la geometría. La probabilidad de absorción, dado que ocurre una interacción, es siempre del $10\%$ para cada región, entonces lo que limita la transmisión de las partículas es la sección eficaz $\Sigma_t$.
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{fig1}
+	\caption{Ejemplo de historia graficada en la geometría del problema}
+\end{figure}
+
+
+Podemos notar que la probabilidad de absorción es muy grande para los constreñimientos dados, lo que se condice con lo esperado, dado que en las capas exteriores el camino libre medio recorrido por la partícula entre cada interacción es muy pequeño, por lo que es muy probable que ocurran muchas interacciones antes de que la partícula escape de la geometría. La probabilidad de absorción, dado que ocurre una interacción, es siempre del $10\%$ para cada región, entonces lo que limita la transmisión de las partículas es la sección eficaz $\Sigma_t$.\\
+
+Utilizando el \emph{script} adjunto a esta entrega escrito en lenguaje Python, \texttt{check.py}, es posible verificar esto. El \emph{script} lo que hace es revisar una historia al azar (entregada solo sí el programa principal \texttt{main.c} se ajusta para que entregue un \emph{output}) y graficarla en la geometría del problema. En la figura 2 se puede apreciar un \emph{output} del \emph{script} mencionado, podemos ver que a medida que la partícula se aleja del núcleo (y entra a los cascarones más grandes) el número de interacciones aumenta considerablemente, este comportamiento se encuentra en la gran mayoría de las historias simuladas.\\
+
+Por otro lado, como es de esperarse, mientras mayor es la cantidad de historias simuladas más preciso es el resultado, los errores calculados a base de dispersión estadística de los \emph{batches} de simulación se ajustan de manera consistente a el valor. Se afirma así que, a medida que se aumenta el número de historias, el valor de $P_{abs}$ y $P_{trans}$ convergen cada una a un cierto número, tal y como se esperaría por la Ley de los Grandes Números.

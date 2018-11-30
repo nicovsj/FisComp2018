@@ -16,7 +16,7 @@ Para el tratamiento del código --el que ya había sido avanzado en clases del c
 		Bibliografía y clases teóricas del curso \\
 		\hline 
 	\end{tabular} 
-	\caption{Tabla resumen con la indumentaria utilizada.}
+	\caption{Indumentaria utilizada.}
 \end{table} 
 
 \subsection{Metodología de implementación}
@@ -47,7 +47,7 @@ Luego, se eligieron mediante generadores de números seudoaleatorios un punto de
 \end{figure}
 
 
-La mayor dificultad en la adaptación del algoritmo radicó en calcular la distancia necesaria que debe recorrer la partícula para llegar a la frontera de la región a la cuál se quiere cambiar. Esta distancia corresponde a el valor $\lambda$ presente en la figura 1. Para encontrar este valor hay que resolver la intersección entre la recta definida por el punto inicial $\vec{x}_0$ y el vector director $\vec{u}$, con la esfera de radio $R_1$, esto es:
+La mayor dificultad en la adaptación del algoritmo radicó en calcular la distancia necesaria que debe recorrer la partícula para llegar a la frontera de la región a la cuál se quiere cambiar (ya que el muestreo de camino libre medio se escapa de la geometría de la región). Esta distancia corresponde a el valor $\lambda$ presente en la figura 1. Para encontrar este valor hay que resolver la intersección entre la recta definida por el punto inicial $\vec{x}_0$ y el vector director $\vec{u}$, con la esfera de radio $R_1$, esto es:
 
 \begin{align}
 	(x, y, z) &= (x_0, y_0, z_0) + \lambda(u, v, w) \\
