@@ -1,2 +1,12 @@
 %!TEX root = ../main/main.tex
 
+A continuación, se exhibirán las principales conclusiones e ideas finales que tuvieron lugar luego del estudio y análisis del modelo MC para el transporte de partículas. Se procurará tener un orden cronológico de acuerdo a los acontecimientos.
+
+\begin{itemize}
+\item En primer lugar, se implementó un código que, junto con las adecuaciones necesarias de espacio y representación geométrica, logró simular con éxito el comportamiento de una partícula emitida por un material fisionable al interior de una esfera maciza, vale decir, se implementó con éxito el método MC para el proyecto final del curso. 
+\item Luego de la implementación, se probó para tres números de historias distintas el programa, donde se evidenció un comportamiento altamente absorbente sufrido por la partícula, lo que era esperable, dadas la naturalezas de las secciones eficaces de absorción y transmisión. De hecho, se notó y evidenció que la probabilidad de absorción, dado que, ocurre una interacción, siempre es del 10$\%$ en cada región, lo que termina por confirmar la hipótesis de que, a priori, habrá absorción.
+\item Más adelante, se concluyó con éxito que, mientras mayor sea el número de historias entregadas al programa, mucho mejor es la simulación, dado que, la incertidumbre relativa a los resultados es lo suficientemente pequeña para garantizar confiabilidad en la reproducción del modelo. Es más, se evidencia que los valores de probabilidad para la absorción y transmisión terminan convergiendo a un valor fijo, tal como, teóricamente, predice la Ley de los Grandes Números.
+\item Finalmente, y en consonancia con todas las conclusiones anteriores, se concluyen los aspectos fundamentales del método MC: sirve para poder estudiar modelos altamente complejos cuya analiticidad se pierde, dándole vigor al análisis numérico. Además, se corroboró que es importante la naturaleza estocástica del modelo a estudiar, pues de este modo, se puede corroborar la cantidad de historias y \emph{batches}: en esa misma línea, al aumentar el número de historias, la situación modelada toma cada vez más sintonía con lo esperado, lo que permite inferir en definitiva la efectividad del modelo y su proyección en ciencia.
+\end{itemize}
+
+
